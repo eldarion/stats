@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import redirect
@@ -9,6 +11,9 @@ from django.contrib.auth.models import User
 def stats():
     return {
         "user_count": User.objects.count(),
+        
+        "joined_last_seven_days": User.objects.filter(date_joined__gt=datetime.now() - timedelta(days=7)).count(),
+        "joined_last_thirty_days": User.objects.filter(date_joined__gt=datetime.now() - timedelta(days=30)).count()
     }
 
 
