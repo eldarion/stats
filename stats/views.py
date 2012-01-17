@@ -4,6 +4,7 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.utils import simplejson
+from django.utils.hashcompat import sha_constructor
 
 from django.contrib.auth.models import User
 
@@ -19,7 +20,14 @@ def stats():
 
 def stats_json(request):
     
-    if request.user.is_staff:
+    checks = [request.user.is_staff]
+    
+    if hasattr(settings, "STATS_AUTH_KEY"):
+        key = "%s-%d" % (settings.STATS_AUTH_KEY, datetime.utcnow().timetuple().tm_yday)
+        header = "HTTP_X_STATS_TOKEN"
+        checks.append(sha_constructor(key).hexdigest() == request.META.get(header, ""))
+    
+    if any(checks):
         d = stats()
         for app in getattr(settings, "STATS_APPS", []):
             m = __import__(app + ".stats", globals(), locals(), ["stats"])
