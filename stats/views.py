@@ -1,9 +1,10 @@
+import json
+
 from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import redirect
-from django.utils import simplejson
 from django.utils.hashcompat import sha_constructor
 
 from django.contrib.auth.models import User
@@ -33,7 +34,7 @@ def stats_json(request):
             m = __import__(app + ".stats", globals(), locals(), ["stats"])
             d.update(m.stats())
         
-        json_data = simplejson.dumps(d, ensure_ascii=False)
+        json_data = json.dumps(d, ensure_ascii=False)
         return HttpResponse(json_data, mimetype="application/json; charset=utf-8")
     else:
         return redirect("home")
