@@ -1,11 +1,12 @@
 import json
 
+from hashlib import sha1
+
 from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import redirect
-from django.utils.hashcompat import sha_constructor
 
 from django.contrib.auth.models import User
 
@@ -26,7 +27,7 @@ def stats_json(request):
     if hasattr(settings, "STATS_AUTH_KEY"):
         key = "%s-%d" % (settings.STATS_AUTH_KEY, datetime.utcnow().timetuple().tm_yday)
         header = "HTTP_X_STATS_TOKEN"
-        checks.append(sha_constructor(key).hexdigest() == request.META.get(header, ""))
+        checks.append(sha1(key).hexdigest() == request.META.get(header, ""))
     
     if any(checks):
         d = stats()
