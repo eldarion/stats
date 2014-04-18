@@ -36,6 +36,6 @@ def stats_json(request):
             d.update(m.stats())
         
         json_data = json.dumps(d, ensure_ascii=False)
-        return HttpResponse(json_data, mimetype="application/json; charset=utf-8")
+        return HttpResponse(json_data, content_type="application/json; charset=utf-8")
     else:
         return redirect("home")
